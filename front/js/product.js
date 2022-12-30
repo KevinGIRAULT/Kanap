@@ -61,12 +61,13 @@ function putInArray() {
 putInArray();
 
 document.getElementById("addToCart").addEventListener("click", () => {
-    const regexOnlyNumberBetween0AND100 = /^(?:100|[1-9][0-9]?)$/;
+    // const regexOnlyNumberBetween0AND100 = /^(?:100|[1-9][0-9]?)$/;
 
     if (
-        regexOnlyNumberBetween0AND100.test(cart.quantity) &&
-        cart.color !== undefined &&
-        cart.color !== ""
+        // regexOnlyNumberBetween0AND100.test(cart.quantity) &&
+        // cart.color !== undefined &&
+        // cart.color !== ""
+        cart.quantity <= 100 && cart.quantity > 0
     ) {
         const cartInString = JSON.stringify(cart);
         localStorage.setItem("autonoé", cartInString);
