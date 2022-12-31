@@ -38,13 +38,14 @@ fetch("http://localhost:3000/api/products")
         console.log(error);
     });
 
-let cart = [
+let cart =
     {
         id: "",
         quantity: "",
         color: "",
-    },
-];
+    }
+
+
 
 function putInArray() {
     document.getElementById("quantity").addEventListener("input", (event) => {
@@ -56,20 +57,20 @@ function putInArray() {
     });
 
     cart.id = new URLSearchParams(window.location.search).get("id");
+    console.log(cart.id);
 }
 
 putInArray();
 
 document.getElementById("addToCart").addEventListener("click", () => {
-    // const regexOnlyNumberBetween0AND100 = /^(?:100|[1-9][0-9]?)$/;
-
     if (
-        // regexOnlyNumberBetween0AND100.test(cart.quantity) &&
-        // cart.color !== undefined &&
-        // cart.color !== ""
-        cart.quantity <= 100 && cart.quantity > 0
+        cart.quantity <= 100 &&
+        cart.quantity > 0 &&
+        cart.color !== undefined &&
+        cart.color !== ""
     ) {
         const cartInString = JSON.stringify(cart);
+        console.log(cartInString);
         localStorage.setItem("autonoé", cartInString);
         alert("l'ajout au panier est bien pris en compte");
     } else {
