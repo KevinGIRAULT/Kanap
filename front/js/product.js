@@ -1,3 +1,5 @@
+let nameOfProduct;
+
 fetch("http://localhost:3000/api/products")
     .then((result) => {
         if (result.ok) {
@@ -12,7 +14,10 @@ fetch("http://localhost:3000/api/products")
             return element._id === idProduct;
         });
 
+
         if (idProduct === searchParams.get("id")) {
+            nameOfProduct = arrayOfProducts[objectProduct].name;
+
             document.querySelector(
                 ".item__img"
             ).innerHTML = `<img src="${arrayOfProducts[objectProduct].imageUrl}" alt="${arrayOfProducts[objectProduct].altTxt}">`;
@@ -38,14 +43,11 @@ fetch("http://localhost:3000/api/products")
         console.log(error);
     });
 
-let cart =
-    {
-        id: "",
-        quantity: "",
-        color: "",
-    }
-
-
+let cart = {
+    id: "",
+    quantity: "",
+    color: "",
+};
 
 function putInArray() {
     document.getElementById("quantity").addEventListener("input", (event) => {
@@ -62,6 +64,18 @@ function putInArray() {
 
 putInArray();
 
+function CheckIfProductAlreadyInCart() {
+    if (localStorage.getItem(nameOfProduct) !== null) {
+        let productFromLocalStorage = localStorage.getItem(nameOfProduct);
+        let toJSON = JSON.parse(productFromLocalStorage);
+
+        if (toJSON.id === cart.id && toJSON.color === cart.color) {
+            console.log("valeur :" + toJSON.id);
+            cart.quantity = +cart.quantity + +toJSON.quantity;
+        }
+    }
+}
+
 document.getElementById("addToCart").addEventListener("click", () => {
     if (
         cart.quantity <= 100 &&
@@ -69,11 +83,36 @@ document.getElementById("addToCart").addEventListener("click", () => {
         cart.color !== undefined &&
         cart.color !== ""
     ) {
+        CheckIfProductAlreadyInCart();
         const cartInString = JSON.stringify(cart);
-        console.log(cartInString);
-        localStorage.setItem("autonoé", cartInString);
+        console.log(nameOfProduct);
+        localStorage.setItem(nameOfProduct, cartInString);
         alert("l'ajout au panier est bien pris en compte");
     } else {
         alert("Faites vos choix");
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+function outerFunction() {
+    console.log("Dans la fonction externe");
+
+    function innerFunction() {
+        console.log("Dans la fonction interne");
+    }
+
+    innerFunction();
+}
+
+outerFunction();
