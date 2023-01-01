@@ -14,30 +14,33 @@ fetch("http://localhost:3000/api/products")
             return element._id === idProduct;
         });
 
+        function productGeneratedInPageFromAPI() {
+            if (idProduct === searchParams.get("id")) {
+                nameOfProduct = arrayOfProducts[objectProduct].name;
 
-        if (idProduct === searchParams.get("id")) {
-            nameOfProduct = arrayOfProducts[objectProduct].name;
+                document.querySelector(
+                    ".item__img"
+                ).innerHTML = `<img src="${arrayOfProducts[objectProduct].imageUrl}" alt="${arrayOfProducts[objectProduct].altTxt}">`;
+                document.getElementById("title").textContent =
+                    arrayOfProducts[objectProduct].name;
+                document.getElementById("description").textContent =
+                    arrayOfProducts[objectProduct].description;
+                document.getElementById("price").textContent =
+                    arrayOfProducts[objectProduct].price;
 
-            document.querySelector(
-                ".item__img"
-            ).innerHTML = `<img src="${arrayOfProducts[objectProduct].imageUrl}" alt="${arrayOfProducts[objectProduct].altTxt}">`;
-            document.getElementById("title").textContent =
-                arrayOfProducts[objectProduct].name;
-            document.getElementById("description").textContent =
-                arrayOfProducts[objectProduct].description;
-            document.getElementById("price").textContent =
-                arrayOfProducts[objectProduct].price;
-
-            const colorOptionsString = arrayOfProducts[
-                objectProduct
-            ].colors.forEach((color) => {
-                let colour = "";
-                colour = `<option value="${color}">${color}</option>`;
-                const selectElement = (document.querySelector(
-                    "#colors"
-                ).innerHTML += colour);
-            });
+                const colorOptionsString = arrayOfProducts[
+                    objectProduct
+                ].colors.forEach((color) => {
+                    let colour = "";
+                    colour = `<option value="${color}">${color}</option>`;
+                    const selectElement = (document.querySelector(
+                        "#colors"
+                    ).innerHTML += colour);
+                });
+            }
         }
+
+        productGeneratedInPageFromAPI();
     })
     .catch(() => {
         console.log(error);
@@ -65,8 +68,8 @@ function putInArray() {
 putInArray();
 
 function CheckIfProductAlreadyInCart() {
-    if (localStorage.getItem(nameOfProduct) !== null) {
-        let productFromLocalStorage = localStorage.getItem(nameOfProduct);
+    if (localStorage.getItem(nameOfProduct + "_" + cart.color) !== null) {
+        let productFromLocalStorage = localStorage.getItem(nameOfProduct + "_" + cart.color);
         let toJSON = JSON.parse(productFromLocalStorage);
 
         if (toJSON.id === cart.id && toJSON.color === cart.color) {
@@ -86,33 +89,9 @@ document.getElementById("addToCart").addEventListener("click", () => {
         CheckIfProductAlreadyInCart();
         const cartInString = JSON.stringify(cart);
         console.log(nameOfProduct);
-        localStorage.setItem(nameOfProduct, cartInString);
+        localStorage.setItem(nameOfProduct + "_" + cart.color, cartInString);
         alert("l'ajout au panier est bien pris en compte");
     } else {
         alert("Faites vos choix");
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-function outerFunction() {
-    console.log("Dans la fonction externe");
-
-    function innerFunction() {
-        console.log("Dans la fonction interne");
-    }
-
-    innerFunction();
-}
-
-outerFunction();
