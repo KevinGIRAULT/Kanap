@@ -1,7 +1,6 @@
 const urlSearchParams = new URLSearchParams(window.location.search);
 const idProduct = urlSearchParams.get("id");
 let nameOfProduct;
-document.getElementById("quantity").value = 0;
 
 fetch("http://localhost:3000/api/products/" + idProduct)
     .then((result) => {
@@ -95,7 +94,9 @@ document.getElementById("addToCart").addEventListener("click", () => {
         const cartInString = JSON.stringify(cart);
         localStorage.setItem("cart", cartInString);
         alert("L'ajout au panier est bien pris en compte");
-        document.getElementById("quantity").value = 0;
+        cart[0].quantity = 1;
+        document.getElementById("quantity").value = 1;
+
     } else {
         alert("Faites vos choix");
     }
