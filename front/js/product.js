@@ -35,7 +35,7 @@ let cart = [];
 let productObject;
 
 document.getElementById("addToCart").addEventListener("click", () => {
-    const quantityElement = document.getElementById("quantity").value;
+    const quantityElement = parseInt(document.getElementById("quantity").value);
     const colorsValue = document.getElementById("colors").value;
 
     productObject = {
@@ -61,25 +61,41 @@ function verifyLegalityUserInput(aQuantity, aColor) {
 }
 
 function checkIfProductAlreadyInCart(anObjectToPushInCart) {
-    console.log(localStorage.getItem("cart"));
     const cartGettedFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
 
     if (cartGettedFromLocalStorage === null) {
         cart.push(anObjectToPushInCart);
+        cartToString = JSON.stringify(cart);
+        localStorage.setItem("cart", cartToString);
+        alert("Le produit est ajouté au panier vide");
     } else {
         productIsInCartYet(anObjectToPushInCart, cartGettedFromLocalStorage);
     }
-    cartToString = JSON.stringify(cart);
-    localStorage.setItem("cart", cartToString);
-    alert("Le produit est ajouté au panier");
 }
 
-function productIsInCartYet(anObjetToCompare, cartGettedFromLocalStorage) {
-    const oneObject = cartGettedFromLocalStorage.find((anObjectToReturn) => {
-        return (
-            anObjectToReturn.id === anObjetToCompare.id &&
-            anObjectToReturn.color === anObjetToCompare.color
-        );
-    });
-    console.log(oneObject);
+function productIsInCartYet(anObjetToCompare, anObjectGettedFromLocalStorage) {
+    console.log(anObjectGettedFromLocalStorage);
+    const returnedObject = anObjectGettedFromLocalStorage.find(
+        (anObjectToReturn) => {
+            return (
+                anObjectToReturn.id === anObjetToCompare.id &&
+                anObjectToReturn.color === anObjetToCompare.color
+            );
+        }
+    );
+    if (returnedObject === undefined) {
+        console.log(" L'objet retourné est : " + returnedObject);
+        cart.push(anObjetToCompare);
+        cartToString = JSON.stringify(cart);
+        localStorage.setItem("cart", cartToString);
+        alert("Le produit est ajouté au panier");
+    } else {
+        anObjetToCompare.quantity += returnedObject.quantity;
+        // cart.push(anObjetToCompare);
+        cart.splice(, , anObjetToCompare);
+        console.log(cart);
+        cartToString = JSON.stringify(cart);
+        localStorage.setItem("cart", cartToString);
+        alert("Le produit est ajouté au panier");
+    }
 }
