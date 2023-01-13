@@ -28,6 +28,7 @@ fetch("http://localhost:3000/api/products/" + idProduct)
         });
     })
     .catch(() => {
+        console.log(error);
     });
 
 let cart = [];
@@ -77,7 +78,7 @@ function productIsInCartYet(
     anObjetToCompare,
     anObjectsArrayGettedFromLocalStorage
 ) {
-    const returnedObject = anObjectsArrayGettedFromLocalStorage.find(
+    const returnedObjectFromLocalStorage = anObjectsArrayGettedFromLocalStorage.find(
         (anObjectToReturn) => {
             return (
                 anObjectToReturn.id === anObjetToCompare.id &&
@@ -85,7 +86,7 @@ function productIsInCartYet(
             );
         }
     );
-    if (returnedObject === undefined) {
+    if (returnedObjectFromLocalStorage === undefined) {
         cart = [...anObjectsArrayGettedFromLocalStorage];
         cart.push(anObjetToCompare);
         cartToString = JSON.stringify(cart);
