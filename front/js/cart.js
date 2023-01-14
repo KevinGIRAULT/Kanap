@@ -1,65 +1,60 @@
-// // for ( let [key, value] of Object.entries(localStorage)) {
-// //     console.log(key, value);
-// // }
+// fetch("http://localhost:3000/api/products/product.html?id=415b7cacb65d43b2b5c1ff70f3393ad1")
+
 
 // const cartItemsElement = document.getElementById("cart__items");
-// const totalQuantityElement = document.getElementById("totalQuantity");
-// const totalPriceElement = document.getElementById("totalPrice");
-// const firstNameErrorMsgElement = document.getElementById("firstNameErrorMsg");
+const totalQuantityElement = document.getElementById("totalQuantity");
+const totalPriceElement = document.getElementById("totalPrice");
+const firstNameErrorMsgElement = document.getElementById("firstNameErrorMsg");
 
-// let productObject;
-
-// function aReflechir() {
- 
-//     let html = "";
-//     for (let index = 0; index < localStorage.length; index++) {
-//         let key = localStorage.key(index);
-//         let value = localStorage.getItem(key);
-//         let idOfProduct = JSON.parse(value).id;
-//         let colorOfProduct = JSON.parse(value).color;
-//         let quantityOfProduct = JSON.parse(value).quantity;
-
-//         /* Pour compléter le HTML, obtenir le tableau issu de l'API. Le transformer en tableau d'objets.
-//         Pour chaque objet, inclure dans le html ce qu'il faut*/
-//         html += `<article class="cart__item" data-id="${idOfProduct}" data-color="${colorOfProduct}">
-//     <div class="cart__item__img">
-//       <img src="../images/product01.jpg" alt="Photographie d'un canapé">
-//     </div>
-//     <div class="cart__item__content">
-//       <div class="cart__item__content__description">
-//         <h2>${productObject._id}</h2>
-//         <p>${colorOfProduct}</p>
-//         <p>42,00 €</p>
-//       </div>
-//       <div class="cart__item__content__settings">
-//         <div class="cart__item__content__settings__quantity">
-//           <p>Qté : ${quantityOfProduct} </p>
-//           <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantityOfProduct}">
-//         </div>
-//         <div class="cart__item__content__settings__delete">
-//           <p class="deleteItem">Supprimer</p>
-//         </div>
-//       </div>
-//     </div>
-//     </article>`;
-//     }
-//     cartItemsElement.innerHTML = html;
-// }
-
-fetch("http://localhost:3000/api/products/product.html?id=415b7cacb65d43b2b5c1ff70f3393ad1")
+function getProduct(itemId) {
+    fetch("http://localhost:3000/api/products/" + itemId)
     .then((result) => {
         if (result.ok) {
             return result.json();
         }
     })
-    .then((products) => {
-        let html = "";
-        products.forEach((product) => {
-            console.log(product);
-        });
+    .then((product) => {
+        // let html = "";
+        // products.forEach((product) => {
+        //     console.log(product);
+        // });
     })
     .catch((error) => {
         console.log(error);
-    });    
+    });
 
-// aReflechir();
+}
+
+function htmlElementsGeneration() {
+    const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
+    let html = "";
+    itemsFromLocalStorage.forEach((item) => {
+        html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
+        <div class="cart__item__img">
+          <img src="${/*l'url du produit ayant l'id correspondant à celui de l'item*/}" alt="${/*altTxt du produit ayant l'id correspondant à cleui de l'item*/}">
+        </div>
+        <div class="cart__item__content">
+          <div class="cart__item__content__description">
+            <h2>${/*Nom du produit ayant l'id correspondant à celui de l'item */}</h2>
+            <p>${item.color}</p>
+            <p>${/*prix du produit ayant l'id correspondant à celui de l'item*/},00 €</p>
+          </div>
+          <div class="cart__item__content__settings">
+            <div class="cart__item__content__settings__quantity">
+              <p>Qté : ${item.quantity}</p>
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${item.quantity}">
+            </div>
+            <div class="cart__item__content__settings__delete">
+              <p class="deleteItem">Supprimer</p>
+            </div>
+          </div>
+        </div>
+      </article>`
+
+        document.getElementById("cart__items").innerHTML = html;
+        
+        console.log(item);
+    });
+}
+
+htmlElementsGeneration();
