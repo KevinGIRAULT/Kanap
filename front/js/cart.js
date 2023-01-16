@@ -1,7 +1,7 @@
-// const cartItemsElement = document.getElementById("cart__items");
 const totalQuantityElement = document.getElementById("totalQuantity");
 const totalPriceElement = document.getElementById("totalPrice");
 const firstNameErrorMsgElement = document.getElementById("firstNameErrorMsg");
+let addedUpPrices = 0;
 
 let product = {
     urlOfProduct: null,
@@ -10,32 +10,16 @@ let product = {
     priceOfProduct: null,
 };
 
-async function getProduct(itemId) {
-    try {
-        const returnedProduct = await (
-            await fetch("http://localhost:3000/api/products/" + itemId)
-        ).json();
-        product.urlOfProduct = returnedProduct.imageUrl;
-        product.altTexte = returnedProduct.altTxt;
-        product.nameOfProduct = returnedProduct.name;
-        product.priceOfProduct = returnedProduct.price;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 async function htmlElementsGeneration() {
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
     let html = "";
-
+    insertQuantity(itemsFromLocalStorage);
+    // for..of instead forEach wich is not designed for asynchronous code
+    // look https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
     for (const item of itemsFromLocalStorage) {
-        insertQuantity(itemsFromLocalStorage);
-        
-        // let additionPrice = 0;
-        // additionPrice += product.priceOfProduct
-        // totalPriceElement.textContent = additionPrice;
+        await getProductFromAPI(item.id);
+        addingUpPricesForTotal(product, item);
 
-        await getProduct(item.id);
         html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
         <div class="cart__item__img">
           <img src="${product.urlOfProduct}" alt="${product.altTexte}">
@@ -60,9 +44,24 @@ async function htmlElementsGeneration() {
 
         document.getElementById("cart__items").innerHTML = html;
     }
+    totalPriceElement.textContent = addedUpPrices;
 }
 
 htmlElementsGeneration();
+
+async function getProductFromAPI(itemId) {
+    try {
+        const returnedProduct = await (
+            await fetch("http://localhost:3000/api/products/" + itemId)
+        ).json();
+        product.urlOfProduct = returnedProduct.imageUrl;
+        product.altTexte = returnedProduct.altTxt;
+        product.nameOfProduct = returnedProduct.name;
+        product.priceOfProduct = returnedProduct.price;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 function insertQuantity(itemsFromLocalStorage) {
     let additionQuantity = 0;
@@ -70,4 +69,29 @@ function insertQuantity(itemsFromLocalStorage) {
         additionQuantity += element.quantity;
     });
     totalQuantityElement.textContent = additionQuantity;
+}
+
+function addingUpPricesForTotal(product, anItem) {
+    addedUpPrices += product.priceOfProduct * anItem.quantity;
+}
+
+document.getElementById("order").addEventListener("click", () => {
+  changeQuantity()
+});
+
+function changeQuantity() {
+    let itemQuantityElements = document.getElementsByClassName("itemQuantity");
+    const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
+
+    let index = 0;
+    for (const itemQuantityElement of itemQuantityElements) {
+        index++;
+        console.log(index);
+        itemsFromLocalStorage[index - 1].quantity = parseInt(
+            itemQuantityElement.value
+        );
+        console.log("quantity : " + itemsFromLocalStorage[index - 1].quantity);
+    }
+    console.log(itemsFromLocalStorage);
+    localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
 }

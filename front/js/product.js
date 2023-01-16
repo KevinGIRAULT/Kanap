@@ -34,6 +34,7 @@ let productObject;
 document.getElementById("addToCart").addEventListener("click", () => {
     const quantityElement = parseInt(document.getElementById("quantity").value);
     const colorsValue = document.getElementById("colors").value;
+    console.log(quantityElement);
 
     productObject = {
         quantity: quantityElement,
