@@ -1,6 +1,5 @@
 const urlSearchParams = new URLSearchParams(window.location.search);
 const idProduct = urlSearchParams.get("id");
-let nameOfProduct;
 
 fetch("http://localhost:3000/api/products/" + idProduct)
     .then((result) => {
@@ -9,8 +8,6 @@ fetch("http://localhost:3000/api/products/" + idProduct)
         }
     })
     .then((product) => {
-        nameOfProduct = product.name;
-
         document.querySelector(
             ".item__img"
         ).innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`;

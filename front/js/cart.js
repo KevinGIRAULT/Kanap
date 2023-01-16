@@ -1,43 +1,55 @@
-// fetch("http://localhost:3000/api/products/product.html?id=415b7cacb65d43b2b5c1ff70f3393ad1")
-
-
 // const cartItemsElement = document.getElementById("cart__items");
 const totalQuantityElement = document.getElementById("totalQuantity");
 const totalPriceElement = document.getElementById("totalPrice");
 const firstNameErrorMsgElement = document.getElementById("firstNameErrorMsg");
 
-function getProduct(itemId) {
-    fetch("http://localhost:3000/api/products/" + itemId)
-    .then((result) => {
-        if (result.ok) {
-            return result.json();
-        }
-    })
-    .then((product) => {
-        // let html = "";
-        // products.forEach((product) => {
-        //     console.log(product);
-        // });
-    })
-    .catch((error) => {
-        console.log(error);
-    });
+let object = {
+    urlOfProduct: null,
+    altTexte: null,
+    nameOfProduct: null,
+    priceOfProduct: null,
+};
 
+// function unePromesse() {
+//     return new Promise((htmlElementsGeneration) => {
+//         if (getProduct) {
+//             console.log(getProduct);
+//             htmlElementsGeneration();
+//         }
+//     });
+// }
+
+// promise = unePromesse();
+// promise.then(htmlElementsGeneration);
+
+function getProduct(itemId /*price, alt, name, url*/) {
+    fetch("http://localhost:3000/api/products/" + itemId)
+        .then((result) => result.json())
+        .then((product) => {
+            console.log(product);
+            object.urlOfProduct = product.imageUrl;
+            object.altTexte = product.altTxt;
+            object.nameOfProduct = product.name;
+            object.priceOfProduct = product.price;
+        })
+        .catch((error) => console.log(error));
 }
 
 function htmlElementsGeneration() {
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
     let html = "";
     itemsFromLocalStorage.forEach((item) => {
+        getProduct(item.id);
+        console.log(object.urlOfProduct);
         html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
         <div class="cart__item__img">
-          <img src="${/*l'url du produit ayant l'id correspondant à celui de l'item*/}" alt="${/*altTxt du produit ayant l'id correspondant à cleui de l'item*/}">
+          <img src="${object.urlOfProduct}" alt="${object.altTexte}">
         </div>
         <div class="cart__item__content">
           <div class="cart__item__content__description">
-            <h2>${/*Nom du produit ayant l'id correspondant à celui de l'item */}</h2>
+            <h2>${object.nameOfProduct}</h2>
             <p>${item.color}</p>
-            <p>${/*prix du produit ayant l'id correspondant à celui de l'item*/},00 €</p>
+            <p>${object.priceOfProduct},00 €</p>
           </div>
           <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
@@ -49,10 +61,10 @@ function htmlElementsGeneration() {
             </div>
           </div>
         </div>
-      </article>`
+      </article>`;
 
         document.getElementById("cart__items").innerHTML = html;
-        
+
         console.log(item);
     });
 }
