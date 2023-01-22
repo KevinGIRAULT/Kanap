@@ -49,6 +49,10 @@ async function htmlElementsGeneration() {
 
 htmlElementsGeneration();
 
+document.getElementById("order").addEventListener("click", () => {
+  changeQuantity()
+});
+
 async function getProductFromAPI(itemId) {
     try {
         const returnedProduct = await (
@@ -75,9 +79,7 @@ function addingUpPricesForTotal(product, anItem) {
     addedUpPrices += product.priceOfProduct * anItem.quantity;
 }
 
-document.getElementById("order").addEventListener("click", () => {
-  changeQuantity()
-});
+
 
 function changeQuantity() {
     let itemQuantityElements = document.getElementsByClassName("itemQuantity");
@@ -94,4 +96,6 @@ function changeQuantity() {
     }
     console.log(itemsFromLocalStorage);
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
+    addedUpPrices = 0;
+    htmlElementsGeneration();
 }
