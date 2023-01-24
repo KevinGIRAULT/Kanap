@@ -45,12 +45,13 @@ async function htmlElementsGeneration() {
         document.getElementById("cart__items").innerHTML = html;
     }
     totalPriceElement.textContent = addedUpPrices;
+    deleteAnItem();
 }
 
 htmlElementsGeneration();
 
 document.getElementById("order").addEventListener("click", () => {
-  changeQuantity()
+    changeQuantity();
 });
 
 async function getProductFromAPI(itemId) {
@@ -79,8 +80,6 @@ function addingUpPricesForTotal(product, anItem) {
     addedUpPrices += product.priceOfProduct * anItem.quantity;
 }
 
-
-
 function changeQuantity() {
     let itemQuantityElements = document.getElementsByClassName("itemQuantity");
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
@@ -98,4 +97,42 @@ function changeQuantity() {
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
     addedUpPrices = 0;
     htmlElementsGeneration();
+}
+
+function deleteAnItem() {
+    deleteButtons = document.getElementsByClassName("deleteItem");
+    console.log(deleteButtons);
+    for (const OneDeleteButton of deleteButtons) {
+        OneDeleteButton.addEventListener("click", () => {
+            console.log(OneDeleteButton.closest("article").dataset.id);
+
+            const itemsFromLS = JSON.parse(localStorage.getItem("cart"));
+
+            i = itemsFromLS.findIndex((element) => {
+                return (
+                    element.id ===
+                        OneDeleteButton.closest("article").dataset.id &&
+                    element.color ===
+                        OneDeleteButton.closest("article").dataset.color
+                );
+            });
+            itemsFromLS.splice(i, 1);
+            console.log(itemsFromLS);
+            localStorage.setItem("cart", JSON.stringify(itemsFromLS));
+            OneDeleteButton.closest("article").style.display = "none";
+            /* Recharge la page pour que la somme totale soit bien affichée. Une meilleure solution peut être trouvée... Si nécessaire (tant que ça passe pour la soutenance 😁 car le temps presse) */
+            location.reload();
+
+            // const filteredItems = itemsFromLS.filter(
+            //     (element) =>
+            //         !(
+            //             element.id ===
+            //                 OneDeleteButton.closest("article").dataset.id &&
+            //             element.color ===
+            //                 OneDeleteButton.closest("article").dataset.color
+            //         )
+            // );
+            // localStorage.setItem("cart", JSON.stringify(filteredItems));
+        });
+    }
 }
