@@ -45,14 +45,17 @@ async function htmlElementsGeneration() {
         document.getElementById("cart__items").innerHTML = html;
     }
     totalPriceElement.textContent = addedUpPrices;
+
     deleteAnItem();
+    document.querySelectorAll(".itemQuantity").forEach((item) => {
+        item.addEventListener("input", () => {
+            changeQuantity();
+            htmlElementsGeneration();
+        });
+    });
 }
 
 htmlElementsGeneration();
-
-document.getElementById("order").addEventListener("click", () => {
-    changeQuantity();
-});
 
 async function getProductFromAPI(itemId) {
     try {
@@ -96,16 +99,12 @@ function changeQuantity() {
     console.log(itemsFromLocalStorage);
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
     addedUpPrices = 0;
-    htmlElementsGeneration();
 }
 
 function deleteAnItem() {
     deleteButtons = document.getElementsByClassName("deleteItem");
-    console.log(deleteButtons);
     for (const OneDeleteButton of deleteButtons) {
         OneDeleteButton.addEventListener("click", () => {
-            console.log(OneDeleteButton.closest("article").dataset.id);
-
             const itemsFromLS = JSON.parse(localStorage.getItem("cart"));
 
             i = itemsFromLS.findIndex((element) => {
@@ -117,22 +116,15 @@ function deleteAnItem() {
                 );
             });
             itemsFromLS.splice(i, 1);
-            console.log(itemsFromLS);
             localStorage.setItem("cart", JSON.stringify(itemsFromLS));
             OneDeleteButton.closest("article").style.display = "none";
-            /* Recharge la page pour que la somme totale soit bien affichée. Une meilleure solution peut être trouvée... Si nécessaire (tant que ça passe pour la soutenance 😁 car le temps presse) */
-            location.reload();
-
-            // const filteredItems = itemsFromLS.filter(
-            //     (element) =>
-            //         !(
-            //             element.id ===
-            //                 OneDeleteButton.closest("article").dataset.id &&
-            //             element.color ===
-            //                 OneDeleteButton.closest("article").dataset.color
-            //         )
-            // );
-            // localStorage.setItem("cart", JSON.stringify(filteredItems));
         });
     }
+}
+
+function manageForm() {
+    /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
+    const regexEmail =
+        /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+    console.log(regexEmail);
 }
