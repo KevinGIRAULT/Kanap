@@ -47,10 +47,10 @@ async function htmlElementsGeneration() {
     totalPriceElement.textContent = addedUpPrices;
 
     deleteAnItem();
+    // let sum = 0;
     document.querySelectorAll(".itemQuantity").forEach((item) => {
-        item.addEventListener("input", () => {
+        item.addEventListener("input", function () {
             changeQuantity();
-            htmlElementsGeneration();
         });
     });
 }
@@ -91,6 +91,7 @@ function changeQuantity() {
     for (const itemQuantityElement of itemQuantityElements) {
         index++;
         console.log(index);
+        console.log(itemQuantityElement.value);
         itemsFromLocalStorage[index - 1].quantity = parseInt(
             itemQuantityElement.value
         );
@@ -98,7 +99,28 @@ function changeQuantity() {
     }
     console.log(itemsFromLocalStorage);
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
-    addedUpPrices = 0;
+    let sum = 0;
+    document.querySelectorAll(".itemQuantity").forEach((item) => {
+        sum +=
+            parseInt(item.value) *
+            parseInt(
+                item
+                    .closest(".cart__item__content")
+                    .querySelector("p:last-child").textContent
+            );
+    });
+
+
+    let totalQuantityAll = 0;
+    document.querySelectorAll(".itemQuantity").forEach((item) => {
+        item.previousElementSibling.textContent = "Qté : " + item.value;
+        totalQuantityAll +=
+            parseInt(item.value)
+    });
+
+
+    totalQuantityElement.textContent = totalQuantityAll;
+    totalPriceElement.textContent = sum;
 }
 
 function deleteAnItem() {
@@ -122,9 +144,9 @@ function deleteAnItem() {
     }
 }
 
-function manageForm() {
-    /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
-    const regexEmail =
-        /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-    console.log(regexEmail);
-}
+// function manageForm() {
+//     /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
+//     const regexEmail =
+//         /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+//     console.log(regexEmail);
+// }
