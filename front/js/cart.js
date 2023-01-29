@@ -90,17 +90,18 @@ function changeQuantity() {
     let index = 0;
     for (const itemQuantityElement of itemQuantityElements) {
         index++;
-        console.log(index);
-        console.log(itemQuantityElement.value);
         itemsFromLocalStorage[index - 1].quantity = parseInt(
             itemQuantityElement.value
         );
-        console.log("quantity : " + itemsFromLocalStorage[index - 1].quantity);
     }
-    console.log(itemsFromLocalStorage);
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
     let sum = 0;
     document.querySelectorAll(".itemQuantity").forEach((item) => {
+        if (verifyInputOfQuantity(item)) {
+            console.log("good");
+        } else {
+            alert("Rentrez un nombre en 1 et 100");
+        }
         sum +=
             parseInt(item.value) *
             parseInt(
@@ -110,14 +111,11 @@ function changeQuantity() {
             );
     });
 
-
     let totalQuantityAll = 0;
     document.querySelectorAll(".itemQuantity").forEach((item) => {
         item.previousElementSibling.textContent = "Qté : " + item.value;
-        totalQuantityAll +=
-            parseInt(item.value)
+        totalQuantityAll += parseInt(item.value);
     });
-
 
     totalQuantityElement.textContent = totalQuantityAll;
     totalPriceElement.textContent = sum;
@@ -143,6 +141,19 @@ function deleteAnItem() {
         });
     }
 }
+
+function verifyInputOfQuantity(objet) {
+    return (
+        objet.value >= 1 &&
+        objet.value <= 100 &&
+        objet.value !== "" &&
+        objet.value !== undefined
+    );
+}
+
+
+
+
 
 // function manageForm() {
 //     /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
