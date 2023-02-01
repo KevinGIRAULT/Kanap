@@ -156,56 +156,83 @@ function manageForm() {
     const regexEmail =
         /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
-        /* Only for number et name of street, not city and postal code */
+    /* Only for number et name of street, not city and postal code */
     const regexAddressLine = /^\d+\s[A-Za-zéèîïêëàäù]+/;
 
+    const firstNameInput = document.getElementById("firstName").value;
+    const firstNameErrorMsgElement =
+        document.getElementById("firstNameErrorMsg");
 
-    const firstName = document.getElementById("firstName").value;
-    const firstNameErrorMsgElement = document.getElementById("firstNameErrorMsg");
+    const lastNameInput = document.getElementById("lastName").value;
+    const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
 
-        const lastName = document.getElementById("lastName").value;
-        const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+    const addressInput = document.getElementById("address").value;
+    const addressErrorMsg = document.getElementById("addressErrorMsg");
 
-        const address = document.getElementById("address").value;
-        const addressErrorMsg = document.getElementById("addressErrorMsg");
-
-        const city = document.getElementById("city").value; 
-        const cityErrorMsg = document.getElementById("cityErrorMsg");
-
+    const cityInput = document.getElementById("city").value;
+    const cityErrorMsg = document.getElementById("cityErrorMsg");
 
     const email = document.getElementById("email").value;
     const emailErrorMsg = document.getElementById("emailErrorMsg");
 
-    if (regexAddressLine.test(address)) {
+    if (regexAddressLine.test(addressInput)) {
         console.log("good");
     } else {
-        addressErrorMsg.textContent = "Le numéro et/ou le nom de la rue est/sont incorrect(s)";
+        addressErrorMsg.textContent =
+            "Le numéro et/ou le nom de la rue est/sont incorrect(s)";
     }
 
     if (regexEmail.test(email)) {
         console.log("good");
     } else {
-        emailErrorMsg.textContent = "L'adresse courriel que vous avez saisie est incorrecte";
+        emailErrorMsg.textContent =
+            "L'adresse courriel que vous avez saisie est incorrecte";
     }
+
+    getCityFromAPI();
 }
 
 manageForm();
 
-
-
 async function getCityFromAPI(city, postalCode) {
     try {
-        const test = await (
+        await (
             await fetch("https://geo.api.gouv.fr/communes")
-        ).json();
-        console.log(test)
+        ).json().then((cities) => {
+            console.log(cities.filter(citi => citi.nom === "Cayenne"));
+        })
     } catch (error) {
         console.log(error);
     }
 }
 
-getCityFromAPI();
+// // Recherche de la commune en utilisant un algorithme de recherche
+// function searchCommunes(communes, searchText) {
+//     return communes.filter(function (commune) {
+//         return commune.name.toLowerCase().includes(searchText.toLowerCase());
+//     });
+// }
 
-function searchCities(cities, searchText) {
+// // Gestionnaire d'événement pour le champ de saisie
+// input.addEventListener("input", function (event) {
+//     const searchText = event.target.value;
 
-}
+//     try {
+//         // Appel de l'API pour obtenir la liste des communes
+//         fetch("https://api.example.com/communes")
+//             .then(function (response) {
+//                 return response.json();
+//             })
+//             .then(function (communes) {
+//                 const suggestions = searchCommunes(communes, searchText);
+
+//                 // Affichage des suggestions dans une liste déroulante
+//                 displaySuggestions(suggestions);
+//             });
+//     } catch (error) {
+//         console.error(
+//             "Une erreur s'est produite lors de la récupération des données de l'API : ",
+//             error
+//         );
+//     }
+// });
