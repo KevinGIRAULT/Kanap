@@ -152,87 +152,126 @@ function verifyInputOfQuantity(InputObject) {
 }
 
 function manageForm() {
+    const label = document.querySelector('label[for="city"]');
+    label.textContent = "Code postal et ville";
+
     /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
     const regexEmail =
         /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
-    /* Only for number et name of street, not city and postal code */
-    const regexAddressLine = /^\d+\s[A-Za-zéèîïêëàäù]+/;
+    /* Pattern de regexFirstName : 
+        For the 1st letter : 
+- the 26 letters of the alphabet used in the French language in upper case,
+- 15 letters with diacritical marks in capital letters (À Â Ä Ç É È Ê Ë Î Ï Ô Ö Ù Û Ü),
+- 2 ligatures in capital letters (Æ Œ).
+        For the following :
+- the 26 letters of the alphabet used in the French language in lower case,
+- 15 letters with diacritical marks in lower case (à â ä ç é ê ë î ï ô ö ù û ü),
+- 2 lowercase ligatures (æ, œ)
+- the apostrophe, the hyphen without space before and after (mandatory for compound names)
+- The space
+- The capital letter is required for the first letter of the second word of the compound name */
+    const regexFirstName =
+        /^[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+((?:-|\s)[A-Z][a-zàâäçéèêëîïôöùûüæœ']+)*$/;
 
-    const firstNameInput = document.getElementById("firstName").value;
-    const firstNameErrorMsgElement =
-        document.getElementById("firstNameErrorMsg");
+    /* regexLastName, unlike regexFirstName, accepts fully capitalized names and does not accept hyphens for compound names */
+    const regexLastName =
+        /^(([A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+)(\s[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+)*|([A-Z]+)(\s[A-Z]+)*)$/;
 
-    const lastNameInput = document.getElementById("lastName").value;
-    const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+    /* Only for number and name of street, not city and postal code */
+    const regexAddressLine =
+        /^\d+\s(?:rue|avenue|boulevard|impasse|place|allée)\s(du|de la)\s\w+(\s\w+)*$/i;
 
-    const addressInput = document.getElementById("address").value;
-    const addressErrorMsg = document.getElementById("addressErrorMsg");
+    regexCity = /^\d{5}\s\w+$/;
 
-    const cityInput = document.getElementById("city").value;
-    const cityErrorMsg = document.getElementById("cityErrorMsg");
+    document.getElementById("firstName").addEventListener("input", (event) => {
+        if (regexFirstName.test(event.target.value)) {
+            console.log("good : " + event.target.value);
+            document.getElementById("firstNameErrorMsg").textContent = "";
+        } else {
+            document.getElementById("firstNameErrorMsg").textContent =
+                "Le prénom est incorrect";
+        }
+    });
 
-    const email = document.getElementById("email").value;
-    const emailErrorMsg = document.getElementById("emailErrorMsg");
+    document.getElementById("lastName").addEventListener("input", (event) => {
+        if (regexLastName.test(event.target.value)) {
+            console.log("good : " + event.target.value);
+            document.getElementById("lastNameErrorMsg").textContent = "";
+        } else {
+            document.getElementById("lastNameErrorMsg").textContent =
+                "Le nom de famille est incorrect";
+        }
+    });
 
-    if (regexAddressLine.test(addressInput)) {
-        console.log("good");
-    } else {
-        addressErrorMsg.textContent =
-            "Le numéro et/ou le nom de la rue est/sont incorrect(s)";
-    }
+    document.getElementById("address").addEventListener("input", (event) => {
+        if (regexAddressLine.test(event.target.value)) {
+            console.log("good : " + event.target.value);
+            document.getElementById("addressErrorMsg").textContent = "";
+        } else {
+            document.getElementById("addressErrorMsg").textContent =
+                "Le numéro et/ou le nom de la rue est/sont incorrect(s)";
+        }
+    });
 
-    if (regexEmail.test(email)) {
-        console.log("good");
-    } else {
-        emailErrorMsg.textContent =
-            "L'adresse courriel que vous avez saisie est incorrecte";
-    }
+    document.getElementById("email").addEventListener("input", (event) => {
+        if (regexEmail.test(event.target.value)) {
+            console.log("good : " + event.target.value);
+            document.getElementById("emailErrorMsg").textContent = "";
+        } else {
+            document.getElementById("emailErrorMsg").textContent =
+                "L'adresse courriel que vous avez saisie est incorrecte";
+        }
+    });
 
-    getCityFromAPI();
+    document.getElementById("city").addEventListener("input", (event) => {
+        if (regexCity.test(event.target.value)) {
+            console.log("good : " + event.target.value);
+            document.getElementById("cityErrorMsg").textContent = "";
+        } else {
+            document.getElementById("cityErrorMsg").textContent =
+                "L'adresse courriel que vous avez saisie est incorrecte";
+        }
+    });
+
+    // For v2
+    // document.getElementById("city").addEventListener("input", event => getCityFromAPI(event.target.value));
 }
 
 manageForm();
 
-async function getCityFromAPI(city, postalCode) {
+async function getCityFromAPI(input) {
     try {
-        await (
-            await fetch("https://geo.api.gouv.fr/communes")
-        ).json().then((cities) => {
-            console.log(cities.filter(citi => citi.nom === "Cayenne"));
-        })
+        await (await fetch("https://geo.api.gouv.fr/communes"))
+            .json()
+            .then((cities) => {
+                let relatedCities = cities
+                    .filter((city) =>
+                        city.nom.toLowerCase().includes(input.toLowerCase())
+                    )
+                    .map((city) => city.nom);
+                console.log(relatedCities);
+                const selectElementOfCities = document.createElement("select");
+
+                document.getElementById(
+                    "city"
+                ).previousElementSibling.innerHTML = "";
+
+                document
+                    .getElementById("city")
+                    .previousElementSibling.appendChild(selectElementOfCities);
+                relatedCities.forEach((relatedCity) => {
+                    const option = document.createElement("option");
+                    option.textContent = relatedCity;
+                    selectElementOfCities.appendChild(option);
+                    console.log(relatedCity);
+                });
+            });
     } catch (error) {
         console.log(error);
     }
 }
 
-// // Recherche de la commune en utilisant un algorithme de recherche
-// function searchCommunes(communes, searchText) {
-//     return communes.filter(function (commune) {
-//         return commune.name.toLowerCase().includes(searchText.toLowerCase());
-//     });
-// }
-
-// // Gestionnaire d'événement pour le champ de saisie
-// input.addEventListener("input", function (event) {
-//     const searchText = event.target.value;
-
-//     try {
-//         // Appel de l'API pour obtenir la liste des communes
-//         fetch("https://api.example.com/communes")
-//             .then(function (response) {
-//                 return response.json();
-//             })
-//             .then(function (communes) {
-//                 const suggestions = searchCommunes(communes, searchText);
-
-//                 // Affichage des suggestions dans une liste déroulante
-//                 displaySuggestions(suggestions);
-//             });
-//     } catch (error) {
-//         console.error(
-//             "Une erreur s'est produite lors de la récupération des données de l'API : ",
-//             error
-//         );
-//     }
-// });
+/*  Exhaustive list of lane types in France, according to the Ministry of the Interior : https://gist.github.com/384400/bf3c83a4e7d1aa66a87e */
+// Pour une v2
+// const regExvoies = /^\(agglomération|abbaye|aire|aires|allée|allées|ancien chemin|ancienne route|anciennes routes|anciens chemins|anse|arcade|arcades|autoroute|avenue|barriere|barrieres|bas chemin|bastide|bastion|beguinage|béguinages|berge|berges|bois|boucle|boulevard|bourg|butte|cale|camp|campagne|camping|carre|carreau|carrefour|carrière|carrières|castel|cavée|central|centre|centre commercial|chalet|chapelle|charmille|château|chaussée|chaussées|chemin|chemin vicinal|cheminement|cheminements|chemins|chemins vicinaux|chez|cite|cites|cloître|clos|col|colline|collines|contour|corniche|corniches|cote|côteau|cottage|cottages|cour|cours|darse|degré|degrés|descente|descentes|digue|digues|domaine|domaines|écluse|écluses|église|enceinte|enclave|enclos|escalier|escaliers|espace|esplanade|esplanades|étang|faubourg|ferme|fermes|fontaine|fort|forum|fosse|fosses|foyer|galerie|galeries|gare|garenne|grand boulevard|grand ensemble|grand rue|grande rue|grandes rues|grands ensembles|grille|grimpette|groupe|groupement|groupes|halle|halles|hameau|hameaux|haut chemin|hauts chemins|hippodrome|hlm|île|immeuble|immeubles|impasse|impasses|jardin|jardins|jetee|jetees|levée|lieu dit|lotissement|lotissements|mail|maison forestière|manoir|marche|marches|mas|métro|montée|montees|moulin|moulins|musée|nouvelle route|palais|parc|parcs|parking|parvis|passage|passage à niveau|passe|passerelle|passerelles|passes|patio|pavillon|pavillons|péripherique|péristyle|petit chemin|petite allée|petite avenue|petite impasse|petite route|petite rue|petites allées|place|placis|plage|plages|plaine|plan|plateau|plateaux|pointe|pont|ponts|porche|port|porte|portique|portiques|poterne|pourtour|pré|presqu'île|promenade|quai|quartier|raccourci|raidillon|rampe|rempart|résidence|r/;
