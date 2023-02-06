@@ -1,3 +1,6 @@
+import { regexEmail, regexFirstName, regexLastName, regexAddressLine, regexCity } from './regex.js';
+
+
 const totalQuantityElement = document.getElementById("totalQuantity");
 const totalPriceElement = document.getElementById("totalPrice");
 let addedUpPrices = 0;
@@ -122,7 +125,7 @@ function changeQuantity() {
 }
 
 function deleteAnItem() {
-    deleteButtons = document.getElementsByClassName("deleteItem");
+    const deleteButtons = document.getElementsByClassName("deleteItem");
     for (const OneDeleteButton of deleteButtons) {
         OneDeleteButton.addEventListener("click", () => {
             const itemsFromLS = JSON.parse(localStorage.getItem("cart"));
@@ -154,35 +157,6 @@ function verifyInputOfQuantity(InputObject) {
 function manageForm() {
     const label = document.querySelector('label[for="city"]');
     label.textContent = "Code postal et ville";
-
-    /* This regEx follow the official standard RFC 5322. From https://emailregex.com/ (POSIX norme) and adapted for JavaScript (ECMAScript norme) */
-    const regexEmail =
-        /(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-
-    /* Pattern de regexFirstName : 
-        For the 1st letter : 
-- the 26 letters of the alphabet used in the French language in upper case,
-- 15 letters with diacritical marks in capital letters (À Â Ä Ç É È Ê Ë Î Ï Ô Ö Ù Û Ü),
-- 2 ligatures in capital letters (Æ Œ).
-        For the following :
-- the 26 letters of the alphabet used in the French language in lower case,
-- 15 letters with diacritical marks in lower case (à â ä ç é ê ë î ï ô ö ù û ü),
-- 2 lowercase ligatures (æ, œ)
-- the apostrophe, the hyphen without space before and after (mandatory for compound names)
-- The space
-- The capital letter is required for the first letter of the second word of the compound name */
-    const regexFirstName =
-        /^[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+((?:-|\s)[A-Z][a-zàâäçéèêëîïôöùûüæœ']+)*$/;
-
-    /* regexLastName, unlike regexFirstName, accepts fully capitalized names and does not accept hyphens for compound names */
-    const regexLastName =
-        /^(([A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+)(\s[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜÆŒ][a-zàâäçéèêëîïôöùûüæœ']+)*|([A-Z]+)(\s[A-Z]+)*)$/;
-
-    /* Only for number and name of street, not city and postal code */
-    const regexAddressLine =
-        /^\d+\s(?:rue|avenue|boulevard|impasse|place|allée)\s(du|de la)\s\w+(\s\w+)*$/i;
-
-    regexCity = /^\d{5}\s\w+$/;
 
     document.getElementById("firstName").addEventListener("input", (event) => {
         if (regexFirstName.test(event.target.value)) {
@@ -230,7 +204,7 @@ function manageForm() {
             document.getElementById("cityErrorMsg").textContent = "";
         } else {
             document.getElementById("cityErrorMsg").textContent =
-                "L'adresse courriel que vous avez saisie est incorrecte";
+                "Il y a une erreur dans votre code postal ou votre ville";
         }
     });
 
