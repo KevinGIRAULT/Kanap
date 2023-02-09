@@ -1,0 +1,1 @@
+document.getElementById("orderId").textContent = new URLSearchParams(window.location.search).get("id");

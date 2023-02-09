@@ -1,5 +1,10 @@
-import { regexEmail, regexFirstName, regexLastName, regexAddressLine, regexCity } from './regex.js';
-
+import {
+    regexEmail,
+    regexFirstName,
+    regexLastName,
+    regexAddressLine,
+    regexCity,
+} from "./regex.js";
 
 const totalQuantityElement = document.getElementById("totalQuantity");
 const totalPriceElement = document.getElementById("totalPrice");
@@ -154,6 +159,15 @@ function verifyInputOfQuantity(InputObject) {
     );
 }
 
+const contact = {
+    firstName: null,
+    lastName: null,
+    address: null,
+    city: null,
+    email: null,
+    array: [],
+};
+
 function manageForm() {
     const label = document.querySelector('label[for="city"]');
     label.textContent = "Code postal et ville";
@@ -161,6 +175,7 @@ function manageForm() {
     document.getElementById("firstName").addEventListener("input", (event) => {
         if (regexFirstName.test(event.target.value)) {
             console.log("good : " + event.target.value);
+            contact.firstName = event.target.value;
             document.getElementById("firstNameErrorMsg").textContent = "";
         } else {
             document.getElementById("firstNameErrorMsg").textContent =
@@ -171,6 +186,7 @@ function manageForm() {
     document.getElementById("lastName").addEventListener("input", (event) => {
         if (regexLastName.test(event.target.value)) {
             console.log("good : " + event.target.value);
+            contact.lastName = event.target.value;
             document.getElementById("lastNameErrorMsg").textContent = "";
         } else {
             document.getElementById("lastNameErrorMsg").textContent =
@@ -181,6 +197,7 @@ function manageForm() {
     document.getElementById("address").addEventListener("input", (event) => {
         if (regexAddressLine.test(event.target.value)) {
             console.log("good : " + event.target.value);
+            contact.address = event.target.value;
             document.getElementById("addressErrorMsg").textContent = "";
         } else {
             document.getElementById("addressErrorMsg").textContent =
@@ -191,6 +208,7 @@ function manageForm() {
     document.getElementById("email").addEventListener("input", (event) => {
         if (regexEmail.test(event.target.value)) {
             console.log("good : " + event.target.value);
+            contact.email = event.target.value;
             document.getElementById("emailErrorMsg").textContent = "";
         } else {
             document.getElementById("emailErrorMsg").textContent =
@@ -201,51 +219,60 @@ function manageForm() {
     document.getElementById("city").addEventListener("input", (event) => {
         if (regexCity.test(event.target.value)) {
             console.log("good : " + event.target.value);
+            contact.city = event.target.value;
             document.getElementById("cityErrorMsg").textContent = "";
         } else {
             document.getElementById("cityErrorMsg").textContent =
                 "Il y a une erreur dans votre code postal ou votre ville";
         }
     });
-
-    // For v2
-    // document.getElementById("city").addEventListener("input", event => getCityFromAPI(event.target.value));
 }
+
+document.getElementById("order").addEventListener("click", (event) => {
+    event.preventDefault();
+    ordering();
+});
 
 manageForm();
 
-async function getCityFromAPI(input) {
-    try {
-        await (await fetch("https://geo.api.gouv.fr/communes"))
-            .json()
-            .then((cities) => {
-                let relatedCities = cities
-                    .filter((city) =>
-                        city.nom.toLowerCase().includes(input.toLowerCase())
-                    )
-                    .map((city) => city.nom);
-                console.log(relatedCities);
-                const selectElementOfCities = document.createElement("select");
+function ordering() {
+    (() => {
+        contact.firstName = document.getElementById("firstName").value;
+        contact.lastName = document.getElementById("lastName").value;
+        contact.address = document.getElementById("address").value;
+        contact.email = document.getElementById("email").value;
+        contact.city = document.getElementById("city").value;
+        // contact.array = JSON.parse(localStorage.getItem("cart")).map(({ id }) => id);
+    })();
 
-                document.getElementById(
-                    "city"
-                ).previousElementSibling.innerHTML = "";
-
-                document
-                    .getElementById("city")
-                    .previousElementSibling.appendChild(selectElementOfCities);
-                relatedCities.forEach((relatedCity) => {
-                    const option = document.createElement("option");
-                    option.textContent = relatedCity;
-                    selectElementOfCities.appendChild(option);
-                    console.log(relatedCity);
-                });
-            });
-    } catch (error) {
-        console.log(error);
-    }
+    const body = {
+        contact: {...contact},
+        products: JSON.parse(localStorage.getItem("cart")).map(({ id }) => id),
+    };
+    console.log(body);
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            } else {
+                return response.json();
+            }
+        })
+        .then((data) => {
+            console.log(data.orderId);
+            window.location.assign("./confirmation.html?id=" + data.orderId);
+        })
+        .catch((error) => {
+            console.error(
+                "There was a problem with the fetch operation: ",
+                error
+            );
+        });
 }
-
-/*  Exhaustive list of lane types in France, according to the Ministry of the Interior : https://gist.github.com/384400/bf3c83a4e7d1aa66a87e */
-// Pour une v2
-// const regExvoies = /^\(agglomération|abbaye|aire|aires|allée|allées|ancien chemin|ancienne route|anciennes routes|anciens chemins|anse|arcade|arcades|autoroute|avenue|barriere|barrieres|bas chemin|bastide|bastion|beguinage|béguinages|berge|berges|bois|boucle|boulevard|bourg|butte|cale|camp|campagne|camping|carre|carreau|carrefour|carrière|carrières|castel|cavée|central|centre|centre commercial|chalet|chapelle|charmille|château|chaussée|chaussées|chemin|chemin vicinal|cheminement|cheminements|chemins|chemins vicinaux|chez|cite|cites|cloître|clos|col|colline|collines|contour|corniche|corniches|cote|côteau|cottage|cottages|cour|cours|darse|degré|degrés|descente|descentes|digue|digues|domaine|domaines|écluse|écluses|église|enceinte|enclave|enclos|escalier|escaliers|espace|esplanade|esplanades|étang|faubourg|ferme|fermes|fontaine|fort|forum|fosse|fosses|foyer|galerie|galeries|gare|garenne|grand boulevard|grand ensemble|grand rue|grande rue|grandes rues|grands ensembles|grille|grimpette|groupe|groupement|groupes|halle|halles|hameau|hameaux|haut chemin|hauts chemins|hippodrome|hlm|île|immeuble|immeubles|impasse|impasses|jardin|jardins|jetee|jetees|levée|lieu dit|lotissement|lotissements|mail|maison forestière|manoir|marche|marches|mas|métro|montée|montees|moulin|moulins|musée|nouvelle route|palais|parc|parcs|parking|parvis|passage|passage à niveau|passe|passerelle|passerelles|passes|patio|pavillon|pavillons|péripherique|péristyle|petit chemin|petite allée|petite avenue|petite impasse|petite route|petite rue|petites allées|place|placis|plage|plages|plaine|plan|plateau|plateaux|pointe|pont|ponts|porche|port|porte|portique|portiques|poterne|pourtour|pré|presqu'île|promenade|quai|quartier|raccourci|raidillon|rampe|rempart|résidence|r/;
