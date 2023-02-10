@@ -165,7 +165,6 @@ const contact = {
     address: null,
     city: null,
     email: null,
-    array: [],
 };
 
 function manageForm() {
@@ -236,43 +235,49 @@ document.getElementById("order").addEventListener("click", (event) => {
 manageForm();
 
 function ordering() {
-    (() => {
-        contact.firstName = document.getElementById("firstName").value;
-        contact.lastName = document.getElementById("lastName").value;
-        contact.address = document.getElementById("address").value;
-        contact.email = document.getElementById("email").value;
-        contact.city = document.getElementById("city").value;
-        // contact.array = JSON.parse(localStorage.getItem("cart")).map(({ id }) => id);
-    })();
+    if (regexCity.test(document.getElementById("city").value) && regexEmail.test(document.getElementById("email").value) && regexAddressLine.test(document.getElementById("address").value) && regexLastName.test(document.getElementById("lastName").value) && regexFirstName.test(document.getElementById("firstName").value)) {
+        (() => {
+            contact.firstName = document.getElementById("firstName").value;
+            contact.lastName = document.getElementById("lastName").value;
+            contact.address = document.getElementById("address").value;
+            contact.email = document.getElementById("email").value;
+            contact.city = document.getElementById("city").value;
+        })();
+    
+        const body = {
+            contact: {...contact},
+            products: JSON.parse(localStorage.getItem("cart")).map(({ id }) => id),
+        };
+        console.log(body);
+        fetch("http://localhost:3000/api/products/order", {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                } else {
+                    return response.json();
+                }
+            })
+            .then((data) => {
+                console.log(data.orderId);
+                window.location.assign("./confirmation.html?id=" + data.orderId);
+            })
+            .catch((error) => {
+                console.error(
+                    "There was a problem with the fetch operation: ",
+                    error
+                );
+            });
+            localStorage.clear();
+    } else {
+        alert("vérifier les champs");
+    }
 
-    const body = {
-        contact: {...contact},
-        products: JSON.parse(localStorage.getItem("cart")).map(({ id }) => id),
-    };
-    console.log(body);
-    fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-    })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            } else {
-                return response.json();
-            }
-        })
-        .then((data) => {
-            console.log(data.orderId);
-            window.location.assign("./confirmation.html?id=" + data.orderId);
-        })
-        .catch((error) => {
-            console.error(
-                "There was a problem with the fetch operation: ",
-                error
-            );
-        });
+
 }
