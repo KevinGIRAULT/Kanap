@@ -56,6 +56,7 @@ async function htmlElementsGeneration() {
     deleteAnItem();
     // let sum = 0;
     document.querySelectorAll(".itemQuantity").forEach((item) => {
+        console.log(item);
         item.addEventListener("input", function () {
             changeQuantity();
         });
@@ -92,6 +93,7 @@ function addingUpPricesForTotal(product, anItem) {
 
 function changeQuantity() {
     let itemQuantityElements = document.getElementsByClassName("itemQuantity");
+    console.log(itemQuantityElements);
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
 
     let index = 0;
@@ -135,7 +137,7 @@ function deleteAnItem() {
         OneDeleteButton.addEventListener("click", () => {
             const itemsFromLS = JSON.parse(localStorage.getItem("cart"));
 
-            i = itemsFromLS.findIndex((element) => {
+            const indexOfItemToDelete = itemsFromLS.findIndex((element) => {
                 return (
                     element.id ===
                         OneDeleteButton.closest("article").dataset.id &&
@@ -143,7 +145,7 @@ function deleteAnItem() {
                         OneDeleteButton.closest("article").dataset.color
                 );
             });
-            itemsFromLS.splice(i, 1);
+            itemsFromLS.splice(indexOfItemToDelete, 1);
             localStorage.setItem("cart", JSON.stringify(itemsFromLS));
             OneDeleteButton.closest("article").style.display = "none";
         });
@@ -278,6 +280,4 @@ function ordering() {
     } else {
         alert("vérifier les champs");
     }
-
-
 }
