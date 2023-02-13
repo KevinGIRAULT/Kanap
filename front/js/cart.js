@@ -54,13 +54,16 @@ async function htmlElementsGeneration() {
     totalPriceElement.textContent = addedUpPrices;
 
     deleteAnItem();
-    // let sum = 0;
+
+    // function test() {
     document.querySelectorAll(".itemQuantity").forEach((item) => {
         console.log(item);
         item.addEventListener("input", function () {
             changeQuantity();
         });
     });
+    // }
+    // test();
 }
 
 htmlElementsGeneration();
@@ -103,6 +106,7 @@ function changeQuantity() {
             itemQuantityElement.value
         );
     }
+
     localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
 
     let sum = 0;
@@ -133,21 +137,45 @@ function changeQuantity() {
 
 function deleteAnItem() {
     const deleteButtons = document.getElementsByClassName("deleteItem");
-    for (const OneDeleteButton of deleteButtons) {
-        OneDeleteButton.addEventListener("click", () => {
+    for (const oneDeleteButton of deleteButtons) {
+        oneDeleteButton.addEventListener("click", () => {
             const itemsFromLS = JSON.parse(localStorage.getItem("cart"));
 
             const indexOfItemToDelete = itemsFromLS.findIndex((element) => {
                 return (
                     element.id ===
-                        OneDeleteButton.closest("article").dataset.id &&
+                        oneDeleteButton.closest("article").dataset.id &&
                     element.color ===
-                        OneDeleteButton.closest("article").dataset.color
+                        oneDeleteButton.closest("article").dataset.color
                 );
             });
             itemsFromLS.splice(indexOfItemToDelete, 1);
             localStorage.setItem("cart", JSON.stringify(itemsFromLS));
-            OneDeleteButton.closest("article").style.display = "none";
+            oneDeleteButton.closest("article").style.display = "none";
+            htmlElementsGeneration();
+
+            // let totalQuantity = 0;
+            // let totalPrice = 0;
+            // let itemPrice = 0;
+            // JSON.parse(localStorage.getItem("cart")).forEach((element) => {
+            //     console.log(element.id);
+            //     getProductFromAPI(element.id);
+            //     console.log(product.priceOfProduct);
+            //     totalQuantity += element.quantity;
+            //     itemPrice = product.priceOfProduct;
+            //     totalPrice += itemPrice * element.quantity;
+            // });
+            // for (const item of JSON.parse(localStorage.getItem("cart"))) {
+            //     getProductFromAPI(item.id);
+            //     console.log(product.priceOfProduct);
+            //     totalQuantity += item.quantity;
+            //     totalPrice += itemPrice * item.quantity;
+            // }
+            // console.log(totalPrice);
+            // console.log(typeof totalQuantity);
+            // document.getElementById("totalQuantity").textContent =
+            //     totalQuantity;
+            // document.getElementById("totalPrice").textContent = totalPrice;
         });
     }
 }
@@ -237,7 +265,13 @@ document.getElementById("order").addEventListener("click", (event) => {
 manageForm();
 
 function ordering() {
-    if (regexCity.test(document.getElementById("city").value) && regexEmail.test(document.getElementById("email").value) && regexAddressLine.test(document.getElementById("address").value) && regexLastName.test(document.getElementById("lastName").value) && regexFirstName.test(document.getElementById("firstName").value)) {
+    if (
+        regexCity.test(document.getElementById("city").value) &&
+        regexEmail.test(document.getElementById("email").value) &&
+        regexAddressLine.test(document.getElementById("address").value) &&
+        regexLastName.test(document.getElementById("lastName").value) &&
+        regexFirstName.test(document.getElementById("firstName").value)
+    ) {
         (() => {
             contact.firstName = document.getElementById("firstName").value;
             contact.lastName = document.getElementById("lastName").value;
@@ -245,10 +279,12 @@ function ordering() {
             contact.email = document.getElementById("email").value;
             contact.city = document.getElementById("city").value;
         })();
-    
+
         const body = {
-            contact: {...contact},
-            products: JSON.parse(localStorage.getItem("cart")).map(({ id }) => id),
+            contact: { ...contact },
+            products: JSON.parse(localStorage.getItem("cart")).map(
+                ({ id }) => id
+            ),
         };
         console.log(body);
         fetch("http://localhost:3000/api/products/order", {
@@ -268,7 +304,9 @@ function ordering() {
             })
             .then((data) => {
                 console.log(data.orderId);
-                window.location.assign("./confirmation.html?id=" + data.orderId);
+                window.location.assign(
+                    "./confirmation.html?id=" + data.orderId
+                );
             })
             .catch((error) => {
                 console.error(
@@ -276,7 +314,7 @@ function ordering() {
                     error
                 );
             });
-            localStorage.clear();
+        localStorage.clear();
     } else {
         alert("vérifier les champs");
     }
