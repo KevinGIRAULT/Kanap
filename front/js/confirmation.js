@@ -1,1 +1,2 @@
+// Gets value of "id" parameter from URL query string, it then sets the text content of the element with the ID "orderId" to the retrieved value.
 document.getElementById("orderId").textContent = new URLSearchParams(window.location.search).get("id");

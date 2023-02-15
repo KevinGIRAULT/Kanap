@@ -1,3 +1,4 @@
+// GET request to API to retrieve a list of products
 fetch("http://localhost:3000/api/products")
     .then((result) => {
         if (result.ok) {

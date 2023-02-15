@@ -17,6 +17,7 @@ let product = {
     priceOfProduct: null,
 };
 
+// Products html generation function
 async function htmlElementsGeneration() {
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
     let html = "";
@@ -68,6 +69,7 @@ async function htmlElementsGeneration() {
 
 htmlElementsGeneration();
 
+// Function to obtain a product from the API and fill the Product object
 async function getProductFromAPI(itemId) {
     try {
         const returnedProduct = await (
@@ -82,6 +84,7 @@ async function getProductFromAPI(itemId) {
     }
 }
 
+// Insert the total quantity in the DOM in the appropriate place
 function insertQuantity(itemsFromLocalStorage) {
     let additionQuantity = 0;
     itemsFromLocalStorage.forEach((element) => {
@@ -90,10 +93,12 @@ function insertQuantity(itemsFromLocalStorage) {
     totalQuantityElement.textContent = additionQuantity;
 }
 
+// Calculation of the total price of the products in the basket
 function addingUpPricesForTotal(product, anItem) {
     addedUpPrices += product.priceOfProduct * anItem.quantity;
 }
 
+// Management of the quantity change
 function changeQuantity() {
     let itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
     let itemQuantityElements = document.getElementsByClassName("itemQuantity");
@@ -137,6 +142,7 @@ function changeQuantity() {
     totalPriceElement.textContent = sum;
 }
 
+// Management of product deletion
 function deleteAnItem() {
     const deleteButtons = document.getElementsByClassName("deleteItem");
     for (const oneDeleteButton of deleteButtons) {
@@ -178,6 +184,7 @@ function deleteAnItem() {
     }
 }
 
+// Checking the user's input if numbers is between 1 and 100
 function verifyInputOfQuantity(InputObject) {
     return (
         InputObject.value >= 1 &&
@@ -195,6 +202,7 @@ const contact = {
     email: null,
 };
 
+// Management of form
 function manageForm() {
     const label = document.querySelector('label[for="city"]');
     label.textContent = "Code postal et ville";
@@ -268,6 +276,7 @@ document.getElementById("order").addEventListener("click", (event) => {
 
 manageForm();
 
+// Management of the order placement
 function ordering() {
     if (
         regexCity.test(document.getElementById("city").value) &&
