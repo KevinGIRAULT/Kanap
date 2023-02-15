@@ -20,38 +20,41 @@ let product = {
 async function htmlElementsGeneration() {
     const itemsFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
     let html = "";
-    insertQuantity(itemsFromLocalStorage);
-    // for..of instead forEach wich is not designed for asynchronous code
-    // look https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
-    for (const item of itemsFromLocalStorage) {
-        await getProductFromAPI(item.id);
-        addingUpPricesForTotal(product, item);
-
-        html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
-        <div class="cart__item__img">
-          <img src="${product.urlOfProduct}" alt="${product.altTexte}">
-        </div>
-        <div class="cart__item__content">
-          <div class="cart__item__content__description">
-            <h2>${product.nameOfProduct}</h2>
-            <p>${item.color}</p>
-            <p>${product.priceOfProduct},00 €</p>
-          </div>
-          <div class="cart__item__content__settings">
-            <div class="cart__item__content__settings__quantity">
-              <p>Qté : ${item.quantity}</p>
-              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${item.quantity}">
+    if (itemsFromLocalStorage !== null) {
+        insertQuantity(itemsFromLocalStorage);
+        // for..of instead forEach wich is not designed for asynchronous code
+        // look https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
+        for (const item of itemsFromLocalStorage) {
+            await getProductFromAPI(item.id);
+            addingUpPricesForTotal(product, item);
+    
+            html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
+            <div class="cart__item__img">
+              <img src="${product.urlOfProduct}" alt="${product.altTexte}">
             </div>
-            <div class="cart__item__content__settings__delete">
-              <p class="deleteItem">Supprimer</p>
+            <div class="cart__item__content">
+              <div class="cart__item__content__description">
+                <h2>${product.nameOfProduct}</h2>
+                <p>${item.color}</p>
+                <p>${product.priceOfProduct},00 €</p>
+              </div>
+              <div class="cart__item__content__settings">
+                <div class="cart__item__content__settings__quantity">
+                  <p>Qté : ${item.quantity}</p>
+                  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${item.quantity}">
+                </div>
+                <div class="cart__item__content__settings__delete">
+                  <p class="deleteItem">Supprimer</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </article>`;
-
-        document.getElementById("cart__items").innerHTML = html;
+          </article>`;
+    
+            document.getElementById("cart__items").innerHTML = html;
+        }
+        totalPriceElement.textContent = addedUpPrices;
     }
-    totalPriceElement.textContent = addedUpPrices;
+
 
     deleteAnItem();
 
@@ -102,25 +105,26 @@ function changeQuantity() {
                 itemQuantityElement.value
             );
             index++;
+            localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
         }
     }
-
-    localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
 
     let sum = 0;
     document.querySelectorAll(".itemQuantity").forEach((item) => {
         if (verifyInputOfQuantity(item)) {
             console.log("good");
+            sum +=
+                parseInt(item.value) *
+                parseInt(
+                    item
+                        .closest(".cart__item__content")
+                        .querySelector("p:last-child").textContent
+                );
+            location.reload();
         } else {
             alert("Rentrez un nombre en 1 et 100");
+            location.reload();
         }
-        sum +=
-            parseInt(item.value) *
-            parseInt(
-                item
-                    .closest(".cart__item__content")
-                    .querySelector("p:last-child").textContent
-            );
     });
 
     let totalQuantityAll = 0;
@@ -252,9 +256,15 @@ function manageForm() {
 }
 
 document.getElementById("order").addEventListener("click", (event) => {
-    event.preventDefault();
-    ordering();
+    let cart = JSON.parse(localStorage.getItem("cart"));
+    if (!cart || cart.length === 0) {
+        alert("Ajoutez des produits aux panier");
+    } else {
+        event.preventDefault();
+        ordering();
+    }
 });
+
 
 manageForm();
 
