@@ -28,7 +28,7 @@ async function htmlElementsGeneration() {
         for (const item of itemsFromLocalStorage) {
             await getProductFromAPI(item.id);
             addingUpPricesForTotal(product, item);
-    
+
             html += `<article class="cart__item" data-id="${item.id}" data-color="${item.color}">
             <div class="cart__item__img">
               <img src="${product.urlOfProduct}" alt="${product.altTexte}">
@@ -50,12 +50,11 @@ async function htmlElementsGeneration() {
               </div>
             </div>
           </article>`;
-    
+
             document.getElementById("cart__items").innerHTML = html;
         }
         totalPriceElement.textContent = addedUpPrices;
     }
-
 
     deleteAnItem();
 
@@ -110,7 +109,6 @@ function changeQuantity() {
                 itemQuantityElement.value
             );
             index++;
-            localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
         }
     }
 
@@ -118,6 +116,7 @@ function changeQuantity() {
     document.querySelectorAll(".itemQuantity").forEach((item) => {
         if (verifyInputOfQuantity(item)) {
             console.log("good");
+            localStorage.setItem("cart", JSON.stringify(itemsFromLocalStorage));
             sum +=
                 parseInt(item.value) *
                 parseInt(
@@ -272,7 +271,6 @@ document.getElementById("order").addEventListener("click", (event) => {
         ordering();
     }
 });
-
 
 manageForm();
 
